@@ -1,0 +1,113 @@
+.header {
+  background-color: #f1f1f1;
+  padding: 20px;
+  text-align: center;
+}
+
+.display {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.display h2 {
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.display p {
+  color: #666;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.display button {
+  background-color: #ff6347;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-left:20px;
+}
+
+.display button:hover {
+  background-color: #e2462c;
+}
+
+.favoriteAnimal {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.favoriteAnimal label {
+  font-size: 18px;
+  color: #333;
+}
+
+.favoriteAnimal input {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  transition: border-color 0.3s ease;
+}
+
+.favoriteAnimal input:focus {
+  outline: none;
+  border-color: #ff6347;
+}
+
+.favoriteAnimal button {
+  background-color: #ff6347;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-left: 20px;
+}
+
+.favoriteAnimal button:hover {
+  background-color: #e2462c;
+}
+
+.footer {
+  margin-top: 20px;
+  background-color: #f1f1f1;
+  padding: 20px;
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+}
+
+.userName {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.userName label {
+  font-size: 18px;
+  color: #333;
+}
+
+.userName input {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  transition: border-color 0.3s ease;
+}
+
+.userName input:focus {
+  outline: none;
+  border-color: #ff6347;
+}
