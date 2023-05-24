@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { updateContact, deleteContact } from '../store/actions/contact';
 
 function Contact(props) {
+    const { id, firstName, lastName, phone } = props.contact;
     const [isEditing, setIsEditing] = useState(false);
-    const [formData, setFormData] = useState({
-        firstName: props.firstName,
-        lastName: props.lastName,
-        phone: props.phone,
-    });
+    const [formData, setFormData] = useState({ firstName, lastName, phone });
+    const dispatch = useDispatch();
 
     const handleInputChange = (event) => {
         const { name, value } = event.target;
@@ -19,28 +19,32 @@ function Contact(props) {
 
     const handleCancelEdit = () => {
         setIsEditing(false);
-        setFormData({ firstName: props.firstName, lastName: props.lastName, phone: props.phone });
+        setFormData({ firstName, lastName, phone });
     };
 
     const handleSaveEdit = () => {
-        props.onUpdateContact({ ...formData, id: props.id });
+        dispatch(updateContact({ ...formData, id }));
         setIsEditing(false);
     };
 
     const handleDelete = () => {
-        props.onDeleteContact(props.id);
+        dispatch(deleteContact(id));
     };
 
     return (
         <tr>
             {!isEditing ? (
                 <>
-                    <td>{props.firstName}</td>
-                    <td>{props.lastName}</td>
-                    <td>{props.phone}</td>
+                    <td>{firstName}</td>
+                    <td>{lastName}</td>
+                    <td>{phone}</td>
                     <td>
-                        <button onClick={handleToggleEdit} className="edit-btn">Edit</button>
-                        <button onClick={handleDelete} className="delete-btn">Delete</button>
+                        <button onClick={handleToggleEdit} className="edit-btn">
+                            Edit
+                        </button>
+                        <button onClick={handleDelete} className="delete-btn">
+                            Delete
+                        </button>
                     </td>
                 </>
             ) : (
@@ -55,8 +59,12 @@ function Contact(props) {
                         <input type="text" name="phone" value={formData.phone} onChange={handleInputChange} />
                     </td>
                     <td>
-                        <button onClick={handleSaveEdit} className="save-btn">Save</button>
-                        <button onClick={handleCancelEdit} className="cancel-btn">Cancel</button>
+                        <button onClick={handleSaveEdit} className="save-btn">
+                            Save
+                        </button>
+                        <button onClick={handleCancelEdit} className="cancel-btn">
+                            Cancel
+                        </button>
                     </td>
                 </>
             )}

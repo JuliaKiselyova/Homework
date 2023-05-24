@@ -1,8 +1,8 @@
 import React from "react";
 
-function Footer({ count }) {
+function Footer() {
     return (
-        <footer>{count} items left
+        <footer> items left
             <div className="footer-text">
                 <p>© 2023 My Website. All rights reserved.</p>
             </div>

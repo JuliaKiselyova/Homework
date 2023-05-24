@@ -1,3 +1,5 @@
+import { ACTION_CONTACT_CREATE, ACTION_CONTACT_REMOVE, ACTION_CONTACT_UPDATE } from '../actions/contact';
+
 const initialState = {
     contactList: [
         { id: '1', firstName: 'Harry', lastName: 'Potter', phone: '222222' },
@@ -6,19 +8,19 @@ const initialState = {
     ],
 };
 
-const contactReducer = (state = initialState, action) => {
+export default function contactReducer(state = initialState, action) {
     switch (action.type) {
-        case 'CREATE_CONTACT':
+        case ACTION_CONTACT_CREATE:
             return {
                 ...state,
                 contactList: [...state.contactList, { ...action.payload, id: Math.random().toString() }],
             };
-        case 'DELETE_CONTACT':
+        case ACTION_CONTACT_REMOVE:
             return {
                 ...state,
                 contactList: state.contactList.filter((contact) => contact.id !== action.payload),
             };
-        case 'UPDATE_CONTACT':
+        case ACTION_CONTACT_UPDATE:
             return {
                 ...state,
                 contactList: state.contactList.map((contact) =>
@@ -28,6 +30,4 @@ const contactReducer = (state = initialState, action) => {
         default:
             return state;
     }
-};
-
-export default contactReducer
+}

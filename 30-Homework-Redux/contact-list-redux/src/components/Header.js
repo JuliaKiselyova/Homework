@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { createContact } from '../store/actions/contact';
 
@@ -19,20 +19,11 @@ function Header() {
 
     return (
         <header>
-            <h1>Contact Table</h1>
+            <h1>Contact List</h1>
             <form onSubmit={handleSubmit}>
-                <label>
-                    First Name:
-                    <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} required />
-                </label>
-                <label>
-                    Last Name:
-                    <input type="text" name="lastName" value={formData.lastName} onChange={handleInputChange} required />
-                </label>
-                <label>
-                    Phone:
-                    <input type="text" name="phone" value={formData.phone} onChange={handleInputChange} required />
-                </label>
+                <input type="text" name="firstName" value={formData.firstName} onChange={handleInputChange} placeholder="First Name" />
+                <input type="text" name="lastName" value={formData.lastName} onChange={handleInputChange} placeholder="Last Name" />
+                <input type="text" name="phone" value={formData.phone} onChange={handleInputChange} placeholder="Phone" />
                 <button type="submit">Add Contact</button>
             </form>
         </header>

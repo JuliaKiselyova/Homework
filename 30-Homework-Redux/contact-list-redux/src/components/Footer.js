@@ -1,13 +1,13 @@
+import React from 'react';
 
-function Footer({ count }) {
+const Footer = () => {
     return (
-        <footer>{count} items left
+        <footer>
             <div className="footer-text">
                 <p>© 2023 My Website. All rights reserved.</p>
             </div>
         </footer>
-
     );
-}
+};
 
 export default Footer;

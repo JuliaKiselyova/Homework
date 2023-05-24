@@ -4,7 +4,7 @@ import contactReducer from './contactReducer';
 
 const rootReducer = combineReducers({
     counter: counterReducer,
-    contact: contactReducer
+    contact: contactReducer,
 });
 
 export default rootReducer;

@@ -1,7 +1,10 @@
 import React from 'react';
 import Contact from './Contact';
 
+
 function ContactList(props) {
+    const { contactList } = props;
+
     return (
         <table>
             <thead>
@@ -13,15 +16,10 @@ function ContactList(props) {
                 </tr>
             </thead>
             <tbody>
-                {props.contactList.map((contact) => (
+                {contactList.map((contact) => (
                     <Contact
                         key={contact.id}
-                        id={contact.id}
-                        firstName={contact.firstName}
-                        lastName={contact.lastName}
-                        phone={contact.phone}
-                        onDeleteContact={props.onDeleteContact}
-                        onUpdateContact={props.onUpdateContact}
+                        contact={contact}
                     />
                 ))}
             </tbody>

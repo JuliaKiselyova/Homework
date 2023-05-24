@@ -1,33 +1,25 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Header from './components/Header';
 import ContactList from './components/ContactList';
+import Footer from './components/Footer';
 import './App.css';
-
-
-
-const initialList = [
-  { id: '1', firstName: 'Harry', lastName: 'Potter', phone: '222222' },
-  { id: '2', firstName: 'Tom', lastName: 'Riddle', phone: '111111' },
-  { id: '3', firstName: 'Johnny', lastName: 'Depp', phone: '12345673' },
-];
+import { createContact, deleteContact, updateContact } from './store/actions/contact';
 
 function App() {
-  const [contactList, setContactList] = useState(initialList);
+  const dispatch = useDispatch();
+  const contactList = useSelector((state) => state.contact.contactList);
 
   const handleCreateContact = (newContact) => {
-    setContactList([...contactList, { ...newContact, id: Math.random().toString() }]);
+    dispatch(createContact(newContact));
   };
 
   const handleDeleteContact = (id) => {
-    setContactList(contactList.filter((contact) => contact.id !== id));
+    dispatch(deleteContact(id));
   };
 
   const handleUpdateContact = (updatedContact) => {
-    setContactList(
-      contactList.map((contact) =>
-        contact.id === updatedContact.id ? { ...updatedContact } : contact
-      )
-    );
+    dispatch(updateContact(updatedContact));
   };
 
   return (
@@ -38,6 +30,7 @@ function App() {
         onDeleteContact={handleDeleteContact}
         onUpdateContact={handleUpdateContact}
       />
+      <Footer />
     </div>
   );
 }
