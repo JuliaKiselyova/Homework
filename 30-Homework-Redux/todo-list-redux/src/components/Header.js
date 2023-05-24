@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
-
-function Header({ onAdd }) {
+function Header({ onAddTodo }) {
     const [title, setTitle] = useState('');
 
-    function handleSubmit(e) {
+    const handleSubmit = (e) => {
         e.preventDefault();
         if (!title) return;
-        onAdd(title);
+        onAddTodo({
+            title,
+            status: true,
+            done: false,
+            id: Math.random().toString(),
+            toDo: '',
+        });
         setTitle('');
-    }
+    };
 
     return (
         <header>
