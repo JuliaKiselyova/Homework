@@ -1,0 +1,139 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background-color: #303f9f;
+    color: white;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 32px;
+}
+
+header form {
+    display: flex;
+    align-items: center;
+}
+
+header input[type="text"] {
+    padding: 8px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: none;
+    margin-right: 8px;
+}
+
+header button {
+    padding: 8px;
+    font-size: 16px;
+    background-color: #3f51b5;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+header button:hover {
+    background-color: #1a237e;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #ccc;
+}
+
+li span {
+    margin-left: 16px;
+    font-size: 20px;
+    flex-grow: 1;
+}
+
+li button {
+    padding: 8px;
+    font-size: 16px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    margin-left: 16px;
+    cursor: pointer;
+}
+
+li button:hover {
+    background-color: #b71c1c;
+}
+
+li input[type="text"] {
+    padding: 8px;
+    font-size: 16px;
+    border-radius: 4px;
+    margin-right: 8px;
+}
+
+li button:last-of-type {
+    background-color: #4caf50;
+}
+
+li button:last-of-type:hover {
+    background-color: #1b5e20;
+}
+
+ul li.done {
+    opacity: 0.6;
+}
+
+footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background-color: #ccc;
+    color: #333;
+}
+
+.footer-text {
+    text-align: right;
+}
+
+.footer-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.filter-button {
+    background-color: transparent;
+    color: #555;
+    border: 2px solid #555;
+    border-radius: 5px;
+    padding: 8px 16px;
+    margin: 0 8px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.filter-button:hover {
+    background-color: #555;
+    color: #fff;
+}
+
+.filter-button.active {
+    background-color: #333;
+    color: #fff;
+}
