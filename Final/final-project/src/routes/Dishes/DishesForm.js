@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Modal, Form, Input, Select, InputNumber, Button } from 'antd';
+import { Modal, Form, Input, Select, InputNumber, Button, Alert } from 'antd';
 
 const { Option } = Select;
 
@@ -25,6 +25,11 @@ const DishesForm = ({ form, initialValues, onCancel, onOk }) => {
 
     return (
         <Form form={form} layout="vertical">
+            {initialValues && initialValues.id && (
+                <Form.Item>
+                    <Alert message={`ID: ${initialValues.id}`} type="info" showIcon />
+                </Form.Item>
+            )}
             <Form.Item
                 name="name"
                 label="Name"
@@ -37,7 +42,7 @@ const DishesForm = ({ form, initialValues, onCancel, onOk }) => {
                 label="Category"
                 rules={[{ required: true, message: 'Please select a category' }]}
             >
-                <Select>
+                <Select style={{ width: '200px' }}>
                     <Option value="appetizer">Appetizer</Option>
                     <Option value="main">Main</Option>
                     <Option value="dessert">Dessert</Option>
@@ -59,10 +64,10 @@ const DishesForm = ({ form, initialValues, onCancel, onOk }) => {
             </Form.Item>
 
             <Form.Item>
-                <Button onClick={handleCancel}>Cancel</Button>
                 <Button type="primary" onClick={handleOk} style={{ marginLeft: 8 }}>
                     Save
                 </Button>
+                <Button onClick={handleCancel}>Cancel</Button>
             </Form.Item>
         </Form>
     );

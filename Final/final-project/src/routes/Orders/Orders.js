@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchOrders, addOrder, updateOrder, deleteOrder, closeOrder } from '../../store/actions/orderActions';
-import { Table, Button, Modal, Form, Input, Select } from 'antd';
-
+import { fetchOrders, addOrder, updateOrder, deleteOrder } from '../../store/actions/orderActions';
+import { Table, Button, Modal, Form, Input, Select, Space } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
+import { WaiterApi } from '../../api/WaiterApi';
+import { MenuApi } from '../../api/MenuApi';
 import OrderForm from './OrderForm';
 
 const { Option } = Select;
@@ -10,19 +12,22 @@ const { Option } = Select;
 const Orders = () => {
     const dispatch = useDispatch();
     const orders = useSelector((state) => state.order.list);
+    const waiters = useSelector((state) => state.waiter.list);
+    const [waitersList, setWaitersList] = useState([]);
 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [formValues, setFormValues] = useState(null);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [dishes, setDishes] = useState([]);
     const [form] = Form.useForm();
+    const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
+    const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
     useEffect(() => {
         const fetchDishes = async () => {
             try {
-                const response = await fetch('https://mock-api-5678.nw.r.appspot.com/dishes');
-                const data = await response.json();
-                setDishes(data);
+                const dishes = await MenuApi.getList();
+                setDishes(dishes);
             } catch (error) {
                 console.error('Error fetching dishes:', error);
             }
@@ -31,6 +36,26 @@ const Orders = () => {
         dispatch(fetchOrders());
         fetchDishes();
     }, [dispatch]);
+
+    useEffect(() => {
+        const fetchWaiters = async () => {
+            try {
+                const waiterList = await WaiterApi.getList();
+                setWaitersList(waiterList);
+                dispatch(fetchWaiters(waiterList)); // Dispatch action to update Redux store
+            } catch (error) {
+                console.log('Error fetching waiters:', error);
+            }
+        };
+
+        fetchWaiters();
+    }, [dispatch]);
+
+    const getWaiterName = (waiterId) => {
+        const waiter = waitersList.find((waiter) => waiter.id === waiterId);
+        return waiter ? waiter.firstName : '';
+    };
+
 
     const handleAddOrder = () => {
         setIsModalVisible(true);
@@ -43,7 +68,22 @@ const Orders = () => {
     };
 
     const handleDeleteOrder = (id) => {
-        dispatch(deleteOrder(id));
+        setDeleteConfirmId(id);
+        setDeleteConfirmVisible(true);
+    };
+
+
+    const handleDeleteConfirm = () => {
+        if (deleteConfirmId) {
+            dispatch(deleteOrder(deleteConfirmId));
+        }
+        setDeleteConfirmVisible(false);
+        setDeleteConfirmId(null);
+    };
+
+    const handleDeleteCancel = () => {
+        setDeleteConfirmVisible(false);
+        setDeleteConfirmId(null);
     };
 
     const handleModalCancel = () => {
@@ -72,23 +112,23 @@ const Orders = () => {
 
     const calculateTotalPrice = (order) => {
         let totalPrice = 0;
-        order.dishes.forEach((dish) => {
-            const dishPrice = dishes.find((item) => item.id === dish.dishId)?.price;
-            if (dishPrice) {
-                totalPrice += dishPrice * dish.count;
-            }
-        });
+        if (order.dishes) {
+            order.dishes.forEach((dish) => {
+                const dishPrice = dishes.find((item) => item.id === dish.dishId)?.price;
+                if (dishPrice) {
+                    totalPrice += dishPrice * dish.count;
+                }
+            });
+        }
         return totalPrice;
     };
+
 
     const getDishNameAndPrice = (dishId) => {
         const dish = dishes.find((dish) => dish.id === dishId);
         return dish ? `${dish.name} - ${dish.price}` : '';
     };
 
-    const closeOrder = (orderId) => {
-        dispatch(closeOrder(orderId));
-    };
 
     const dishesColumns = [
         {
@@ -125,59 +165,66 @@ const Orders = () => {
         },
     ];
 
-    return (
-        <div>
-            <h1>Orders</h1>
-            <Table
-                dataSource={orders}
-                columns={[
-                    {
-                        title: 'Order ID',
-                        dataIndex: 'id',
-                        key: 'id',
-                    },
-                    {
-                        title: 'Waiter ID',
-                        dataIndex: 'waiterId',
-                        key: 'waiterId',
-                    },
-                    {
-                        title: 'Table ID',
-                        dataIndex: 'tableId',
-                        key: 'tableId',
-                    },
-                    {
-                        title: 'Dishes',
-                        key: 'dishes',
-                        render: (_, record) => (
-                            <Button onClick={() => handleViewDishes(record)}>View Dishes</Button>
-                        ),
-                    },
-                    {
-                        title: 'Total Price',
-                        key: 'totalPrice',
-                        render: (_, record) => calculateTotalPrice(record),
-                    },
-                    {
-                        title: 'Actions',
-                        key: 'actions',
-                        render: (_, record) => (
-                            <>
-                                <Button type="primary" onClick={() => handleEditOrder(record)}>
-                                    Edit
-                                </Button>
-                                <Button type="danger" onClick={() => handleDeleteOrder(record.id)}>
-                                    Close
-                                </Button>
-                            </>
-                        ),
-                    },
-                ]}
-            />
+    const ordersColumns = [
+        {
+            title: 'Order ID',
+            dataIndex: 'id',
+            key: 'id',
+        },
+        {
+            title: 'Waiter Name',
+            dataIndex: 'waiterId',
+            key: 'waiterName',
+            render: (waiterId) => getWaiterName(waiterId),
+        },
+        {
+            title: 'Table ID',
+            dataIndex: 'tableId',
+            key: 'tableId',
+        },
+        {
+            title: 'Dishes',
+            key: 'dishes',
+            render: (_, record) => (
+                <Button icon={<EyeOutlined />} onClick={() => handleViewDishes(record)} />
+            ),
+        },
+        {
+            title: 'Total Price',
+            key: 'totalPrice',
+            render: (_, record) => calculateTotalPrice(record),
+        },
+        {
+            title: 'Actions',
+            key: 'actions',
+            render: (_, record) => (
+                <Space>
+                    <Button type="primary" icon={<EditOutlined />} onClick={() => handleEditOrder(record)}>
+                        Edit
+                    </Button>
+                    <Button type="primary" danger icon={<DeleteOutlined />} onClick={() => handleDeleteOrder(record.id)}>
+                        Delete
+                    </Button>
+                </Space>
+            ),
+        },
+    ];
 
-            <Button type="primary" onClick={handleAddOrder}>
-                Add Order
+    const tableStyle = {
+        width: '80%',
+        margin: '0 auto',
+    };
+
+    return (
+        <div style={{ padding: '24px' }}>
+
+            <h2 style={{ marginBottom: '16px' }}>Orders</h2>
+            <Button type="primary" icon={<PlusOutlined />} onClick={handleAddOrder}>
+                Add New Order
             </Button>
+            <Table dataSource={orders} columns={ordersColumns} pagination={{ pageSize: 10 }} bordered style={tableStyle} />
+
+
 
             <OrderForm
                 visible={isModalVisible}
@@ -202,6 +249,16 @@ const Orders = () => {
                         Total Price: {calculateTotalPrice(selectedOrder)}
                     </p>
                 )}
+            </Modal>
+            <Modal
+                title="Confirm Delete"
+                visible={deleteConfirmVisible}
+                onOk={handleDeleteConfirm}
+                onCancel={handleDeleteCancel}
+                okText="Delete"
+                cancelText="Cancel"
+            >
+                <p>Are you sure you want to delete this order?</p>
             </Modal>
         </div>
     );

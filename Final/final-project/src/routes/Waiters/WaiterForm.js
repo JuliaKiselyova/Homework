@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Form, Input, Button, Alert } from 'antd';
 
-const WaiterForm = ({ initialValues, onOk, onCancel, form }) => {
+const WaiterForm = ({ initialValues, onOk, onCancel, form, isEditForm }) => {
     useEffect(() => {
         form.resetFields();
     }, [initialValues, form]);
@@ -22,6 +22,11 @@ const WaiterForm = ({ initialValues, onOk, onCancel, form }) => {
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
         >
+            {initialValues && initialValues.id && (
+                <Form.Item>
+                    <Alert message={`ID: ${initialValues.id}`} type="info" showIcon />
+                </Form.Item>
+            )}
             <Form.Item
                 label="First Name"
                 name="firstName"
@@ -47,19 +52,12 @@ const WaiterForm = ({ initialValues, onOk, onCancel, form }) => {
             >
                 <Input />
             </Form.Item>
-
-            {initialValues && initialValues.id && (
-                <Form.Item>
-                    <Alert message={`ID: ${initialValues.id}`} type="info" showIcon />
-                </Form.Item>
-            )}
-
-            <Form.Item>
+            <Form.Item style={{ textAlign: 'right' }}>
                 <Button type="primary" htmlType="submit">
-                    {initialValues ? 'Save' : 'Add'}
+                    {isEditForm ? 'Save' : 'Add'}
                 </Button>
                 <Button htmlType="button" onClick={onCancel} style={{ marginLeft: '8px' }}>
-                    Cancel
+                    {isEditForm ? 'Cancel' : 'Clear'}
                 </Button>
             </Form.Item>
         </Form>

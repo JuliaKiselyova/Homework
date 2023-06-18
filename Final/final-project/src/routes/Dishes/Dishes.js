@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMenu, filterMenuByCategory, addMenuItem, updateMenuItem, deleteMenuItem } from '../../store/actions/menuActions';
 import { Table, Select, Button, Modal, Form } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import DishesForm from './DishesForm';
 
 const { Option } = Select;
@@ -15,6 +16,8 @@ const Dishes = () => {
     const [form] = Form.useForm();
     const [selectedDish, setSelectedDish] = useState(null);
     const [filteredMenu, setFilteredMenu] = useState(menu);
+    const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
+    const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
     useEffect(() => {
         dispatch(fetchMenu());
@@ -29,40 +32,55 @@ const Dishes = () => {
             title: 'ID',
             dataIndex: 'id',
             key: 'id',
+            width: '10%',
+            align: 'center',
         },
         {
             title: 'Name',
             dataIndex: 'name',
             key: 'name',
+            width: '20%',
         },
         {
             title: 'Description',
             dataIndex: 'description',
             key: 'description',
+            width: '30%',
         },
         {
             title: 'Price',
             dataIndex: 'price',
             key: 'price',
             render: (text) => `$${text.toFixed(2)}`, // Format the price as currency
+            width: '10%',
         },
         {
             title: 'Category',
             dataIndex: 'category',
             key: 'category',
+            align: 'center',
+            width: '20%',
         },
         {
             title: 'Actions',
             key: 'actions',
-            render: (text, record) => (
-                <span>
-                    <Button type="link" onClick={() => handleEdit(record)}>
+            align: 'center',
+            width: '10%',
+            render: (_, record) => (
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Button type="primary" icon={<EditOutlined />} onClick={() => handleEdit(record)}>
                         Edit
                     </Button>
-                    <Button type="link" onClick={() => handleDelete(record.id)}>
+                    <Button
+                        type="primary"
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={() => handleDelete(record)}
+                        style={{ marginLeft: '8px' }} // Add margin between buttons
+                    >
                         Delete
                     </Button>
-                </span>
+                </div>
             ),
         },
     ];
@@ -93,14 +111,27 @@ const Dishes = () => {
         form.setFieldsValue(record);
     };
 
-
-    const handleDelete = (id) => {
-        dispatch(deleteMenuItem(id));
+    const handleDelete = (record) => {
+        setDeleteConfirmVisible(true);
+        setDeleteConfirmId(record.id);
     };
 
+    const handleDeleteConfirm = () => {
+        if (deleteConfirmId) {
+            dispatch(deleteMenuItem(deleteConfirmId));
+        }
+        setDeleteConfirmVisible(false);
+        setDeleteConfirmId(null);
+    };
+
+    const handleDeleteCancel = () => {
+        setDeleteConfirmVisible(false);
+        setDeleteConfirmId(null);
+    };
 
     const handleModalCancel = () => {
         setIsModalVisible(false);
+        setSelectedDish(null);
         form.resetFields();
     };
 
@@ -120,12 +151,15 @@ const Dishes = () => {
         setIsModalVisible(false);
     };
 
+    const tableStyle = {
+        width: '80%',
+        margin: '0 auto',
+    };
+
     return (
-        <div>
-            <h2>Dishes</h2>
-            <Button type="primary" onClick={handleAdd}>Add Dish</Button>
-            <div>
-                <Select style={{ width: 200 }} placeholder="Filter by Category" onChange={handleCategoryChange}>
+        <div style={{ padding: '24px' }}>
+            <div style={{ marginBottom: '16px', width: '200px' }}>
+                <Select placeholder="Filter by category" value={selectedCategory} onChange={handleCategoryChange} style={{ width: '200px' }}>
                     <Option value="">All</Option>
                     <Option value="appetizer">Appetizer</Option>
                     <Option value="main">Main</Option>
@@ -133,7 +167,16 @@ const Dishes = () => {
                 </Select>
 
             </div>
-            <Table dataSource={filteredMenu} columns={columns} />
+
+            <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={handleAdd}
+                style={{ marginBottom: '16px' }}
+            >
+                Add New
+            </Button>
+            <Table dataSource={filteredMenu} columns={columns} pagination={{ pageSize: 10 }} style={tableStyle} />
 
             <Modal
                 title={selectedDish ? 'Edit Dish' : 'Add Dish'}
@@ -142,6 +185,17 @@ const Dishes = () => {
                 footer={null}
             >
                 <DishesForm form={form} initialValues={selectedDish} onCancel={handleModalCancel} onOk={handleModalOk} />
+            </Modal>
+
+            <Modal
+                title="Confirm Delete"
+                visible={deleteConfirmVisible}
+                onOk={handleDeleteConfirm}
+                onCancel={handleDeleteCancel}
+                okText="Delete"
+                cancelText="Cancel"
+            >
+                <p>Are you sure you want to delete this dish?</p>
             </Modal>
         </div>
     );

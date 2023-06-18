@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Form, Input, Select, InputNumber, Button } from 'antd';
+import { Modal, Form, Input, Select, InputNumber, Button, Alert } from 'antd';
 import TableApi from '../../api/TableApi';
 import { WaiterApi } from '../../api/WaiterApi';
+import { fetchWaiters } from '../../store/actions/waiterActions';
+import { fetchMenuItems } from '../../store/actions/menuActions';
 
 const { Option } = Select;
 
@@ -11,6 +13,7 @@ const OrderForm = ({ visible, initialValues, onCancel, onOk, dishes }) => {
     const [totalOrderPrice, setTotalOrderPrice] = useState(0);
     const [waitersList, setWaitersList] = useState([]);
     const [tables, setTables] = useState([]);
+    const isEditForm = Boolean(initialValues && Object.keys(initialValues).length > 0);
 
     useEffect(() => {
         if (visible) {
@@ -20,7 +23,7 @@ const OrderForm = ({ visible, initialValues, onCancel, onOk, dishes }) => {
             } else {
                 form.setFieldsValue({});
             }
-            calculateTotalOrderPrice(); 
+            calculateTotalOrderPrice();
         }
     }, [visible, initialValues, form]);
 
@@ -50,18 +53,12 @@ const OrderForm = ({ visible, initialValues, onCancel, onOk, dishes }) => {
         fetchTables();
     }, []);
 
-    const handleAddDish = () => {
-        const dishes = form.getFieldValue('dishes') || [];
-        const nextDishes = [...dishes, { dishId: '', count: 1 }];
-        form.setFieldsValue({ dishes: nextDishes });
-    };
 
     const handleRemoveDish = (index) => {
         const dishes = form.getFieldValue('dishes') || [];
-        const nextDishes = [...dishes];
-        nextDishes.splice(index, 1);
+        const nextDishes = dishes.filter((dish, dishIndex) => dishIndex !== index);
         form.setFieldsValue({ dishes: nextDishes });
-        calculateTotalOrderPrice(); 
+        calculateTotalOrderPrice();
     };
 
     const handleSubmit = () => {
@@ -89,13 +86,23 @@ const OrderForm = ({ visible, initialValues, onCancel, onOk, dishes }) => {
         setTotalOrderPrice(totalAmount);
     };
 
+
+    const handleAddDish = () => {
+        const dishes = form.getFieldValue('dishes') || [];
+        const nextDishes = [...dishes, { dishId: '', count: 1 }];
+        form.setFieldsValue({ dishes: nextDishes });
+        calculateTotalOrderPrice();
+    };
+
+
     const handleDishCountChange = (index, count) => {
         const dishes = form.getFieldValue('dishes') || [];
         const nextDishes = [...dishes];
         nextDishes[index].count = count;
         form.setFieldsValue({ dishes: nextDishes });
-        calculateTotalOrderPrice(); 
+        calculateTotalOrderPrice();
     };
+
 
     useEffect(() => {
         const prices = {};
@@ -108,12 +115,18 @@ const OrderForm = ({ visible, initialValues, onCancel, onOk, dishes }) => {
     return (
         <Modal visible={visible} title="Order Form" onCancel={onCancel} onOk={handleSubmit} destroyOnClose>
             <Form form={form} layout="vertical">
+                {initialValues && initialValues.id && (
+                    <Form.Item>
+                        <Alert message={`ID: ${initialValues.id}`} type="info" showIcon />
+                    </Form.Item>
+                )}
                 <Form.Item name="waiterId" label="Waiter ID" rules={[{ required: true }]}>
                     <Select>
                         {waitersList.map((waiter) => (
                             <Option key={waiter.id} value={waiter.id}>
-                                {waiter.name}
+                                {waiter.firstName}
                             </Option>
+
                         ))}
                     </Select>
                 </Form.Item>

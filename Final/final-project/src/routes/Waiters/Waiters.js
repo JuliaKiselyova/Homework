@@ -1,23 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    fetchWaiters,
-    addWaiter,
-    updateWaiter,
-    deleteWaiter,
-    setWaiterFilter, // Import the new action creator
-} from '../../store/actions/waiterActions';
+import { fetchWaiters, addWaiter, updateWaiter, deleteWaiter, setWaiterFilter } from '../../store/actions/waiterActions';
 import { Table, Button, Modal, Form, Input } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
 import WaiterForm from './WaiterForm';
 
 const Waiters = () => {
     const waiters = useSelector((state) => state.waiter.list);
-    const filter = useSelector((state) => state.waiter.filter); // Get the filter value from the state
+    const filter = useSelector((state) => state.waiter.filter);
     const dispatch = useDispatch();
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedWaiter, setSelectedWaiter] = useState(null);
     const [form] = Form.useForm();
+    const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
+    const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
     useEffect(() => {
         dispatch(fetchWaiters());
@@ -36,13 +33,21 @@ const Waiters = () => {
     };
 
     const handleDeleteWaiter = (id) => {
-        dispatch(deleteWaiter(id))
-            .then(() => {
-                setSelectedWaiter(null);
-            })
-            .catch((error) => {
-                console.log('Delete Waiter Error:', error);
-            });
+        setDeleteConfirmVisible(true);
+        setDeleteConfirmId(id);
+    };
+
+    const handleDeleteConfirm = () => {
+        if (deleteConfirmId) {
+            dispatch(deleteWaiter(deleteConfirmId));
+        }
+        setDeleteConfirmVisible(false);
+        setDeleteConfirmId(null);
+    };
+
+    const handleDeleteCancel = () => {
+        setDeleteConfirmVisible(false);
+        setDeleteConfirmId(null);
     };
 
     const handleModalCancel = () => {
@@ -53,36 +58,72 @@ const Waiters = () => {
 
     const handleModalOk = (values) => {
         if (selectedWaiter) {
-            dispatch(updateWaiter(selectedWaiter.id, values))
-                .then(() => {
-                    setSelectedWaiter({ ...selectedWaiter, ...values });
-                })
-                .catch((error) => {
-                    console.log('Update Waiter Error:', error);
-                });
+            dispatch(updateWaiter(selectedWaiter.id, values));
         } else {
-            dispatch(addWaiter(values))
-                .then(() => {
-                    dispatch(fetchWaiters());
-                })
-                .catch((error) => {
-                    console.log('Add Waiter Error:', error);
-                });
+            dispatch(addWaiter(values));
         }
         setIsModalVisible(false);
+        setSelectedWaiter(null);
         form.resetFields();
     };
 
     const handleFilterChange = (e) => {
-        dispatch(setWaiterFilter(e.target.value)); // Dispatch the action to set the filter value
+        dispatch(setWaiterFilter(e.target.value));
     };
 
     const filteredWaiters = waiters.filter((waiter) =>
         waiter.firstName.toLowerCase().includes(filter.toLowerCase())
     );
 
+    const columns = [
+        {
+            title: 'ID',
+            dataIndex: 'id',
+            key: 'id',
+            align: 'center',
+        },
+        {
+            title: 'First Name',
+            dataIndex: 'firstName',
+            key: 'firstName',
+            align: 'center',
+        },
+        {
+            title: 'Phone',
+            dataIndex: 'phone',
+            key: 'phone',
+            align: 'center',
+        },
+        {
+            title: 'Actions',
+            key: 'actions',
+            align: 'center',
+            width: '400px',
+            render: (_, record) => (
+                <span>
+                    <Button
+                        type="primary"
+                        icon={<EditOutlined />}
+                        onClick={() => handleEditWaiter(record)}
+                    >
+                        Edit
+                    </Button>
+                    <Button
+                        type="primary"
+                        danger
+                        icon={<DeleteOutlined />}
+                        onClick={() => handleDeleteWaiter(record.id)}
+                        style={{ marginLeft: '8px' }}
+                    >
+                        Delete
+                    </Button>
+                </span>
+            ),
+        },
+    ];
+
     return (
-        <div>
+        <div style={{ padding: '24px' }}>
             <div style={{ marginBottom: '16px' }}>
                 <Input
                     placeholder="Filter by name"
@@ -90,44 +131,22 @@ const Waiters = () => {
                     onChange={handleFilterChange}
                 />
             </div>
-            <h2>Waiters</h2>
-            <Button type="primary" onClick={handleAddWaiter}>
+            <h2 style={{ marginBottom: '16px' }}>Waiters</h2>
+            <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={handleAddWaiter}
+                style={{ marginBottom: '16px' }}
+            >
                 Add New
             </Button>
             <Table
                 rowKey="id"
-                columns={[
-                    {
-                        title: 'ID',
-                        dataIndex: 'id',
-                        key: 'id',
-                    },
-                    {
-                        title: 'First Name',
-                        dataIndex: 'firstName',
-                        key: 'firstName',
-                    },
-                    {
-                        title: 'Phone',
-                        dataIndex: 'phone',
-                        key: 'phone',
-                    },
-                    {
-                        title: 'Actions',
-                        key: 'actions',
-                        render: (_, record) => (
-                            <span>
-                                <Button type="link" onClick={() => handleEditWaiter(record)}>
-                                    Edit
-                                </Button>
-                                <Button type="link" onClick={() => handleDeleteWaiter(record.id)}>
-                                    Delete
-                                </Button>
-                            </span>
-                        ),
-                    },
-                ]}
-                dataSource={filteredWaiters} // Use the filtered waiters list
+                columns={columns}
+                dataSource={filteredWaiters}
+                bordered
+                pagination={false}
+                style={{ borderRadius: '8px' }}
             />
 
             <Modal
@@ -141,7 +160,20 @@ const Waiters = () => {
                     onOk={handleModalOk}
                     onCancel={handleModalCancel}
                     form={form}
+                    isEditForm={!!selectedWaiter}
                 />
+            </Modal>
+
+            <Modal
+                title="Confirm Delete"
+                visible={deleteConfirmVisible}
+                onCancel={handleDeleteCancel}
+                onOk={handleDeleteConfirm}
+                cancelText="Cancel"
+                okText="Delete"
+
+            >
+                <p>Are you sure you want to delete this waiter?</p>
             </Modal>
         </div>
     );

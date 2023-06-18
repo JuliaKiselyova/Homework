@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Modal, Form, Input } from 'antd';
+import { Modal, Form, Input, Alert, Button } from 'antd';
 
 const TableForm = ({ visible, initialValues, onCancel, onOk, form }) => {
     useEffect(() => {
@@ -24,21 +24,27 @@ const TableForm = ({ visible, initialValues, onCancel, onOk, form }) => {
 
     return (
         <Modal
-            title="Add/Edit Table"
+            title={initialValues ? 'Edit Table' : 'Add Table'}
             visible={visible}
             onCancel={handleModalCancel}
-            onOk={handleModalOk}
+            footer={[
+                <Button key="save" type="primary" onClick={handleModalOk}>
+                    {initialValues ? 'Save' : 'Add'}
+                </Button>,
+                <Button key="cancel" onClick={handleModalCancel}>
+                    Cancel
+                </Button>,
+
+            ]}
             afterClose={handleModalCancel}
         >
             <Form form={form} layout="vertical">
-                <Form.Item name="id" label="ID">
-                    <Input disabled />
-                </Form.Item>
-                <Form.Item
-                    name="number"
-                    label="Number"
-                    rules={[{ required: true, message: 'Please enter a number' }]}
-                >
+                {initialValues && initialValues.id && (
+                    <Form.Item>
+                        <Alert message={`ID: ${initialValues.id}`} type="info" showIcon />
+                    </Form.Item>
+                )}
+                <Form.Item name="number" label="Number">
                     <Input />
                 </Form.Item>
             </Form>

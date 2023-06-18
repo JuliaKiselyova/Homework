@@ -1,14 +1,91 @@
 .header {
-  background-color: #f0f2f5;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  background-color: #ffffff;
+  padding: 0 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .logo {
   font-size: 24px;
   font-weight: bold;
+  color: #333333;
+}
+
+.menu-container {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  overflow: visible !important;
+}
+
+.ant-menu-horizontal {
+  border-bottom: none;
+  white-space: nowrap;
+}
+
+.ant-menu-item {
+  font-size: 16px;
+  color: #333333;
+}
+
+.ant-menu-item:hover {
   color: #1890ff;
+}
+
+.ant-menu-item.active {
+  color: #1890ff;
+}
+.home-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.home-content {
+  text-align: center;
+}
+
+.button-container {
+  margin-bottom: 20px;
+}
+
+.image-container {
+  margin-bottom: 20px;
+}
+
+.restaurant-image {
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 50%;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.home-title {
+  font-size: 32px;
+  margin-top: 20px;
+}
+
+.home-description {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.custom-button {
+  background-color: #1890ff;
+  color: #ffffff;
+  border-color: #1890ff;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.custom-button:hover {
+  background-color: #40a9ff;
+  border-color: #40a9ff;
 }

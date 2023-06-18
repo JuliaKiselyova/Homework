@@ -1,8 +1,8 @@
 import { createSelector } from 'reselect';
 
+export const selectTables = state => state.table.list;
 export const selectOrders = state => state.order.list;
 export const selectWaiters = state => state.waiter.list;
-export const selectTables = state => state.table.list;
 export const selectMenuItems = state => state.menu.menuItems;
 
 export const selectCommonOrders = createSelector(

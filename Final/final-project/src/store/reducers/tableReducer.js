@@ -1,9 +1,10 @@
-// tableReducer.js
+
 import { FETCH_TABLES, ADD_TABLE, UPDATE_TABLE, DELETE_TABLE } from '../actions/tableActions';
 
 const initialState = {
     list: [],
 };
+
 
 const tableReducer = (state = initialState, action) => {
     switch (action.type) {

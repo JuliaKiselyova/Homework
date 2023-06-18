@@ -1,5 +1,5 @@
 import { OrderApi } from '../../api/OrderApi';
-import { TableApi } from '../../api/TableApi';
+import TableApi from '../../api/TableApi';
 import { WaiterApi } from '../../api/WaiterApi';
 import { setOrderList } from './orderActions';
 import { setTableList } from './tableActions';
@@ -17,8 +17,5 @@ export const fetchCommonData = () => {
                 dispatch(setTableList(tables));
                 dispatch(setWaiterList(waiters));
             })
-            .catch((error) => {
-                console.error(error);
-            });
     };
 };
