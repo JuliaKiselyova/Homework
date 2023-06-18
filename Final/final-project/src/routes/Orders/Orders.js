@@ -3,59 +3,35 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchOrders, addOrder, updateOrder, deleteOrder } from '../../store/actions/orderActions';
 import { Table, Button, Modal, Form, Input, Select, Space } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
-import { WaiterApi } from '../../api/WaiterApi';
-import { MenuApi } from '../../api/MenuApi';
+import { fetchMenuItems } from '../../store/actions/menuActions';
+import { fetchWaiters } from '../../store/actions/waiterActions';
 import OrderForm from './OrderForm';
 
 const { Option } = Select;
 
 const Orders = () => {
     const dispatch = useDispatch();
+    const tables = useSelector((state) => state.tables.list);
+    const menu = useSelector((state) => state.menu.menuItems);
     const orders = useSelector((state) => state.order.list);
-    const waiters = useSelector((state) => state.waiter.list);
-    const [waitersList, setWaitersList] = useState([]);
-
+    const waitersList = useSelector((state) => state.waiter.list);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [formValues, setFormValues] = useState(null);
     const [selectedOrder, setSelectedOrder] = useState(null);
-    const [dishes, setDishes] = useState([]);
     const [form] = Form.useForm();
     const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
     const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
     useEffect(() => {
-        const fetchDishes = async () => {
-            try {
-                const dishes = await MenuApi.getList();
-                setDishes(dishes);
-            } catch (error) {
-                console.error('Error fetching dishes:', error);
-            }
-        };
-
+        dispatch(fetchWaiters());
+        dispatch(fetchMenuItems());
         dispatch(fetchOrders());
-        fetchDishes();
-    }, [dispatch]);
-
-    useEffect(() => {
-        const fetchWaiters = async () => {
-            try {
-                const waiterList = await WaiterApi.getList();
-                setWaitersList(waiterList);
-                dispatch(fetchWaiters(waiterList)); // Dispatch action to update Redux store
-            } catch (error) {
-                console.log('Error fetching waiters:', error);
-            }
-        };
-
-        fetchWaiters();
     }, [dispatch]);
 
     const getWaiterName = (waiterId) => {
         const waiter = waitersList.find((waiter) => waiter.id === waiterId);
         return waiter ? waiter.firstName : '';
     };
-
 
     const handleAddOrder = () => {
         setIsModalVisible(true);
@@ -71,7 +47,6 @@ const Orders = () => {
         setDeleteConfirmId(id);
         setDeleteConfirmVisible(true);
     };
-
 
     const handleDeleteConfirm = () => {
         if (deleteConfirmId) {
@@ -114,7 +89,7 @@ const Orders = () => {
         let totalPrice = 0;
         if (order.dishes) {
             order.dishes.forEach((dish) => {
-                const dishPrice = dishes.find((item) => item.id === dish.dishId)?.price;
+                const dishPrice = menu.find((item) => item.id === dish.dishId)?.price;
                 if (dishPrice) {
                     totalPrice += dishPrice * dish.count;
                 }
@@ -123,12 +98,10 @@ const Orders = () => {
         return totalPrice;
     };
 
-
     const getDishNameAndPrice = (dishId) => {
-        const dish = dishes.find((dish) => dish.id === dishId);
+        const dish = menu.find((dish) => dish.id === dishId);
         return dish ? `${dish.name} - ${dish.price}` : '';
     };
-
 
     const dishesColumns = [
         {
@@ -136,7 +109,7 @@ const Orders = () => {
             dataIndex: 'dishId',
             key: 'dishId',
             render: (dishId) => {
-                const dish = dishes.find((dish) => dish.id === dishId);
+                const dish = menu.find((item) => item.id === dishId);
                 return dish ? dish.name : '';
             },
         },
@@ -150,7 +123,7 @@ const Orders = () => {
             dataIndex: 'dishId',
             key: 'price',
             render: (dishId) => {
-                const dish = dishes.find((dish) => dish.id === dishId);
+                const dish = menu.find((item) => item.id === dishId);
                 return dish ? dish.price : '';
             },
         },
@@ -159,7 +132,7 @@ const Orders = () => {
             dataIndex: 'dishId',
             key: 'totalPrice',
             render: (dishId, record) => {
-                const dish = dishes.find((dish) => dish.id === dishId);
+                const dish = menu.find((item) => item.id === dishId);
                 return dish ? dish.price * record.count : '';
             },
         },
@@ -217,24 +190,19 @@ const Orders = () => {
 
     return (
         <div style={{ padding: '24px' }}>
-
             <h2 style={{ marginBottom: '16px' }}>Orders</h2>
             <Button type="primary" icon={<PlusOutlined />} onClick={handleAddOrder}>
                 Add New Order
             </Button>
             <Table dataSource={orders} columns={ordersColumns} pagination={{ pageSize: 10 }} bordered style={tableStyle} />
-
-
-
             <OrderForm
                 visible={isModalVisible}
                 onCancel={handleModalCancel}
                 onOk={handleModalOk}
                 initialValues={formValues}
-                dishes={dishes}
+                dishes={menu} // Pass 'menu' instead of 'dishes'
                 form={form}
             />
-
             <Modal
                 title="Dishes"
                 visible={selectedOrder !== null}

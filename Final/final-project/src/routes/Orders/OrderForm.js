@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Modal, Form, Input, Select, InputNumber, Button, Alert } from 'antd';
-import TableApi from '../../api/TableApi';
-import { WaiterApi } from '../../api/WaiterApi';
-import { fetchWaiters } from '../../store/actions/waiterActions';
+import { fetchOrders } from '../../store/actions/orderActions';
 import { fetchMenuItems } from '../../store/actions/menuActions';
+import { fetchWaiters } from '../../store/actions/waiterActions';
+import { fetchTables } from '../../store/actions/tableActions';
 
 const { Option } = Select;
 
 const OrderForm = ({ visible, initialValues, onCancel, onOk, dishes }) => {
     const [form] = Form.useForm();
-    const [dishPrices, setDishPrices] = useState({});
+    const dispatch = useDispatch();
+    const waitersList = useSelector((state) => state.waiter.list);
+    const tables = useSelector((state) => state.tables.list);
     const [totalOrderPrice, setTotalOrderPrice] = useState(0);
-    const [waitersList, setWaitersList] = useState([]);
-    const [tables, setTables] = useState([]);
-    const isEditForm = Boolean(initialValues && Object.keys(initialValues).length > 0);
+
 
     useEffect(() => {
         if (visible) {
@@ -28,30 +29,11 @@ const OrderForm = ({ visible, initialValues, onCancel, onOk, dishes }) => {
     }, [visible, initialValues, form]);
 
     useEffect(() => {
-        const fetchWaiters = async () => {
-            try {
-                const waiterList = await WaiterApi.getList();
-                setWaitersList(waiterList);
-            } catch (error) {
-                console.log('Error fetching waiters:', error);
-            }
-        };
-
-        fetchWaiters();
-    }, []);
-
-    useEffect(() => {
-        const fetchTables = async () => {
-            try {
-                const tableList = await TableApi.getList();
-                setTables(tableList);
-            } catch (error) {
-                console.log('Error fetching tables:', error);
-            }
-        };
-
-        fetchTables();
-    }, []);
+        dispatch(fetchWaiters());
+        dispatch(fetchMenuItems());
+        dispatch(fetchOrders());
+        dispatch(fetchTables());
+    }, [dispatch]);
 
 
     const handleRemoveDish = (index) => {
@@ -109,7 +91,7 @@ const OrderForm = ({ visible, initialValues, onCancel, onOk, dishes }) => {
         dishes.forEach((dish) => {
             prices[dish.id] = dish.price;
         });
-        setDishPrices(prices);
+        setTotalOrderPrice(prices);
     }, [dishes]);
 
     return (
