@@ -191,7 +191,7 @@ const Orders = () => {
     return (
         <div style={{ padding: '24px' }}>
             <h2 style={{ marginBottom: '16px' }}>Orders</h2>
-            <Button type="primary" icon={<PlusOutlined />} onClick={handleAddOrder}>
+            <Button type="primary" icon={<PlusOutlined />} onClick={handleAddOrder} style={{ marginBottom: '16px' }}>
                 Add New Order
             </Button>
             <Table dataSource={orders} columns={ordersColumns} pagination={{ pageSize: 10 }} bordered style={tableStyle} />
