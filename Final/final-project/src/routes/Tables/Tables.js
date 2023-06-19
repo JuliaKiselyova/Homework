@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTables, addTable, updateTable, deleteTable } from '../../store/actions/tableActions';
-import { Table, Button, Modal, Form, Input } from 'antd';
+import { Table, Button, Modal, Form } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
 import TableForm from './TableForm';

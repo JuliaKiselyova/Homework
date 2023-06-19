@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchOrders, addOrder, updateOrder, deleteOrder } from '../../store/actions/orderActions';
-import { Table, Button, Modal, Form, Input, Select, Space } from 'antd';
+import { Table, Button, Modal, Form, Space } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import { fetchMenuItems } from '../../store/actions/menuActions';
 import { fetchWaiters } from '../../store/actions/waiterActions';
 import OrderForm from './OrderForm';
 
-const { Option } = Select;
-
 const Orders = () => {
     const dispatch = useDispatch();
-    const tables = useSelector((state) => state.tables.list);
     const menu = useSelector((state) => state.menu.menuItems);
     const orders = useSelector((state) => state.order.list);
     const waitersList = useSelector((state) => state.waiter.list);
@@ -98,10 +95,6 @@ const Orders = () => {
         return totalPrice;
     };
 
-    const getDishNameAndPrice = (dishId) => {
-        const dish = menu.find((dish) => dish.id === dishId);
-        return dish ? `${dish.name} - ${dish.price}` : '';
-    };
 
     const dishesColumns = [
         {
@@ -200,7 +193,7 @@ const Orders = () => {
                 onCancel={handleModalCancel}
                 onOk={handleModalOk}
                 initialValues={formValues}
-                dishes={menu} // Pass 'menu' instead of 'dishes'
+                dishes={menu}
                 form={form}
             />
             <Modal

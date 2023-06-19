@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchMenu, filterMenuByCategory, addMenuItem, updateMenuItem, deleteMenuItem } from '../../store/actions/menuActions';
+import { fetchMenu, addMenuItem, updateMenuItem, deleteMenuItem } from '../../store/actions/menuActions';
 import { Table, Select, Button, Modal, Form } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import DishesForm from './DishesForm';

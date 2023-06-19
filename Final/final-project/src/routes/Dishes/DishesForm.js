@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Modal, Form, Input, Select, InputNumber, Button, Alert } from 'antd';
+import { Form, Input, Select, InputNumber, Button, Alert } from 'antd';
 
 const { Option } = Select;
 
